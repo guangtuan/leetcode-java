@@ -30,11 +30,6 @@ class Solution {
                 .toArray(new String[]{});
     }
 
-    static boolean isNumber(String s) {
-        char c = s.charAt(0);
-        return "9".charAt(0) >= c && c >= "0".charAt(0);
-    }
-
     private static class Inner {
         private String[] values;
 
@@ -46,8 +41,8 @@ class Solution {
 
         static Inner fromString(String origin) {
             Inner inner = new Inner();
-            inner.values = origin.split(" ");
-            inner.isNumber = Solution.isNumber(inner.values[1]);
+            inner.values = origin.split(" ", 2);
+            inner.isNumber = Character.isDigit(inner.values[1].charAt(0));
             inner.origin = origin;
             return inner;
         }
@@ -57,15 +52,7 @@ class Solution {
         }
 
         String getValuesJoint() {
-            if (this.valuesJoint == null) {
-                StringBuilder builder = new StringBuilder();
-                for (int i = 1; i < this.values.length; i++) {
-                    builder.append(this.values[i]);
-                    builder.append(",");
-                }
-                this.valuesJoint = builder.toString();
-            }
-            return this.valuesJoint;
+            return this.values[1];
         }
 
     }
