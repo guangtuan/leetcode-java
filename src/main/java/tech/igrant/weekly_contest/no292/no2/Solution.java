@@ -55,7 +55,7 @@ class Solution {
         return count;
     }
 
-    class TreeNode {
+    static class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
