@@ -23,7 +23,7 @@ public class SolutionTest {
     public void search() {
         for (TestCase testCase : testCaseList) {
             int search = solution.search(testCase.arr, testCase.target);
-            Assert.assertEquals(search, testCase.exp);
+            Assert.assertEquals(testCase.exp, search);
         }
     }
 }
