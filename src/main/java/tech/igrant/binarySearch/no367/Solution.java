@@ -3,11 +3,8 @@ package tech.igrant.binarySearch.no367;
 class Solution {
 
     public boolean isPerfectSquare(int num) {
-        if (num == 0 || num == 1) {
-            return true;
-        }
         int left = 0;
-        int right = num / 2;
+        int right = num;
         while (right >= left) {
             int middle = (right - left) / 2 + left;
             long produce = (long) middle * middle;
