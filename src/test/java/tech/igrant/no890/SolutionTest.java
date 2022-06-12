@@ -13,6 +13,7 @@ public class SolutionTest {
     }
 
     private static final List<TestCase> testCase = Arrays.asList(
+            new TestCase(new String[]{"abc", "cba", "xyx", "yxx", "yyx"}, "abc", Arrays.asList("abc", "cba")),
             new TestCase(new String[]{"abc", "deq", "mee", "aqq", "dkd", "ccc"}, "abb", Arrays.asList("mee", "aqq"))
     );
 
