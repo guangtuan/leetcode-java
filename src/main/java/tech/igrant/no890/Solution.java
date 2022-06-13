@@ -1,24 +1,36 @@
 package tech.igrant.no890;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class Solution {
 
-    private String toPattern(String s) {
+    private List<Integer> toPattern(String s) {
         Map<Character, Integer> lookup = new HashMap<>();
-        StringBuilder sb = new StringBuilder();
+        List<Integer> standard = new ArrayList<>();
         for (int i = 0; i < s.length(); i++) {
-            sb.append(lookup.computeIfAbsent(s.charAt(i), absent -> lookup.size()));
+            standard.add(lookup.computeIfAbsent(s.charAt(i), absent -> lookup.size()));
         }
-        return sb.toString();
+        return standard;
+    }
+
+    private Predicate<String> valid(List<Integer> standard) {
+        return input -> {
+            Map<Character, Integer> lookup = new HashMap<>();
+            for (int i = 0; i < input.length(); i++) {
+                Integer curr = lookup.computeIfAbsent(input.charAt(i), absent -> lookup.size());
+                if (!standard.get(i).equals(curr)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     public List<String> findAndReplacePattern(String[] words, String pattern) {
-        Map<String, List<String>> patterns = Arrays.stream(words).collect(Collectors.groupingBy(
-                this::toPattern
-        ));
-        return patterns.getOrDefault(this.toPattern(pattern), Collections.emptyList());
+        List<Integer> standard = this.toPattern(pattern);
+        return Arrays.stream(words).filter(this.valid(standard)).collect(Collectors.toList());
     }
 
 }
