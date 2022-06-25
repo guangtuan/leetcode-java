@@ -15,4 +15,12 @@ public class JSON {
         }
     }
 
+    public static void printJSON(Object object) {
+        try {
+            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
