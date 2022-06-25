@@ -1,26 +1,20 @@
 package tech.igrant.no46;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Solution {
 
-    public List<List<Integer>> permute(int[] nums) {
-        return generate(Arrays.stream(nums).boxed().collect(Collectors.toList()));
-    }
-
-    List<List<Integer>> generate(List<Integer> array) {
-        if (array.size() == 1) {
-            return Collections.singletonList(array);
+    public List<List<Integer>> permute(int[] array) {
+        if (array.length == 1) {
+            return onlyOne(onlyOne(array[0]));
         }
-        final int[] holder = new int[]{0};
-        return array.stream().
-                map(curr -> generate(remove(holder[0]++, array))
+        return IntStream.range(0, array.length)
+                .mapToObj(index -> permute(remove(index, array))
                         .stream()
-                        .map(ret -> merge(ret, curr))
+                        .map(ret -> merge(ret, array[index]))
                         .collect(Collectors.toList())
                 )
                 .reduce(
@@ -32,14 +26,21 @@ class Solution {
                 );
     }
 
+    private <T> List<T> onlyOne(T ele) {
+        List<T> ret = new ArrayList<>();
+        ret.add(ele);
+        return ret;
+    }
+
     private List<Integer> merge(List<Integer> ret, Integer integer) {
         ret.add(integer);
         return ret;
     }
 
-    List<Integer> remove(int index, List<Integer> origin) {
-        List<Integer> ret = new ArrayList<>(origin);
-        ret.remove(index);
+    int[] remove(int index, int[] array) {
+        int[] ret = new int[array.length - 1];
+        System.arraycopy(array, 0, ret, 0, index);
+        System.arraycopy(array, index + 1, ret, index, ret.length - index);
         return ret;
     }
 

@@ -11,6 +11,22 @@ import static tech.igrant.AssertSupport.listEquals;
 
 public class SolutionTest {
 
+    @Test
+    public void remove() {
+        Assert.assertArrayEquals(
+                new int[]{2, 3},
+                solution.remove(0, new int[]{1, 2, 3})
+        );
+        Assert.assertArrayEquals(
+                new int[]{1, 3},
+                solution.remove(1, new int[]{1, 2, 3})
+        );
+        Assert.assertArrayEquals(
+                new int[]{1, 2},
+                solution.remove(2, new int[]{1, 2, 3})
+        );
+    }
+
     private record TestCase(int[] arr, List<List<Integer>> exp) {
     }
 
@@ -68,7 +84,6 @@ public class SolutionTest {
 
 
     private final Solution solution = new Solution();
-
 
 
     @Test
