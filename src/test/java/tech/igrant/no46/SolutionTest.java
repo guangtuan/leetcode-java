@@ -98,4 +98,18 @@ public class SolutionTest {
             );
         }
     }
+
+    @Test
+    public void permuteKt() {
+        SolutionKt solutionKt = new SolutionKt();
+        for (TestCase testCase : testCases) {
+            List<List<Integer>> act = solutionKt.permute(testCase.arr);
+            Assert.assertTrue(
+                    listEquals(numbers -> numbers.stream().map(String::valueOf).collect(Collectors.joining(",")),
+                            testCase.exp,
+                            act
+                    )
+            );
+        }
+    }
 }
