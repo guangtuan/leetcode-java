@@ -2,53 +2,46 @@ package tech.igrant.weekly_contest.no303.no3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 
 class FoodRatings {
 
-    private final Map<String, String> indexByCuisine;
-    private final Map<String, FoodAndRating> indexByFood;
-    private final Map<String, TreeSet<FoodAndRating>> groupByCuisine;
-
-    private static class FoodAndRating {
-        private final String food;
-        private final int rating;
-
-        public FoodAndRating(String food, int rating) {
-            this.food = food;
-            this.rating = rating;
-        }
-    }
+    private final Map<String, Integer> foodToRating;
+    private final Map<String, String> foodToCuisine;
+    private final Map<String, TreeSet<String>> groupByCuisine;
 
     public FoodRatings(String[] foods, String[] cuisines, int[] ratings) {
-        this.indexByCuisine = new HashMap<>();
-        this.indexByFood = new HashMap<>();
+        this.foodToRating = new HashMap<>();
+        this.foodToCuisine = new HashMap<>();
+
         this.groupByCuisine = new HashMap<>();
         for (int i = 0; i < foods.length; i++) {
-            String food = foods[i];
-            String cuisine = cuisines[i];
-            indexByCuisine.put(food, cuisine);
-            indexByFood.put(food, new FoodAndRating(food, ratings[i]));
+            foodToRating.put(foods[i], ratings[i]);
+            foodToCuisine.put(foods[i], cuisines[i]);
             groupByCuisine.computeIfAbsent(
-                    cuisine,
+                    cuisines[i],
                     c -> new TreeSet<>(
-                            (o1, o2) -> o1.rating == o2.rating ? o1.food.compareTo(o2.food) : o2.rating - o1.rating
+                            (food1, food2) -> {
+                                Integer r1 = foodToRating.get(food1);
+                                Integer r2 = foodToRating.get(food2);
+                                return Objects.equals(r1, r2) ? food1.compareTo(food2) : r2.compareTo(r1);
+                            }
                     )
-            ).add(indexByFood.get(food));
+            ).add(foods[i]);
         }
     }
 
     public void changeRating(String food, int newRating) {
-        String cuisine = indexByCuisine.get(food);
-        TreeSet<FoodAndRating> treeSet = groupByCuisine.get(cuisine);
-        treeSet.remove(indexByFood.get(food));
-        indexByFood.put(food, new FoodAndRating(food, newRating));
-        treeSet.add(indexByFood.get(food));
+        TreeSet<String> treeSet = groupByCuisine.get(foodToCuisine.get(food));
+        treeSet.remove(food);
+        foodToRating.put(food, newRating);
+        treeSet.add(food);
     }
 
     public String highestRated(String cuisine) {
-        TreeSet<FoodAndRating> foods = groupByCuisine.get(cuisine);
-        return foods.first().food;
+        TreeSet<String> foods = groupByCuisine.get(cuisine);
+        return foods.first();
     }
 
 }
