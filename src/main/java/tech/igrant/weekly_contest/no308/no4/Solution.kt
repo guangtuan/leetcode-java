@@ -5,28 +5,25 @@ import java.util.*
 class Solution {
 
     private fun sort(conditions: Array<IntArray>, k: Int): Map<Int, Int> {
-        // 1 到 k的前置节点
         val g = Array(k + 1) { mutableListOf<Int>() }
         // 统计一个元素的依赖数量
         val inDeg = IntArray(k + 1)
         for ((x, y) in conditions) {
             // x 被 y 依赖
             g[x].add(y)
-            // 统计每一个元素的依赖数量
             inDeg[y]++
         }
         val order = mutableListOf<Int>()
         // 初始化队列
-        val q = ArrayDeque(Array(k) { it + 1 }.filter { inDeg[it] == 0 }.toList())
+        val q = ArrayDeque(Array(k) { it + 1 }.filter { inDeg[it] == 0 })
         while (q.isNotEmpty()) {
-            q.removeFirst().let { x ->
-                order.add(x)
-                g[x].forEach {
-                    // 当 x 被移除，依赖 x 的元素的依赖数量都应该减去 1
-                    if (--inDeg[it] == 0) {
-                        // 当这个元素没有依赖，则加入队列
-                        q.add(it)
-                    }
+            val x = q.removeFirst()
+            order.add(x)
+            g[x].forEach {
+                // 当 x 被移除，依赖 x 的元素的依赖数量都应该减去 1
+                if (--inDeg[it] == 0) {
+                    // 当这个元素没有依赖，则加入队列
+                    q.add(it)
                 }
             }
         }
@@ -50,11 +47,12 @@ class Solution {
             return Array(0) { IntArray(0) }
         }
         val ret = Array(k) { IntArray(k) { 0 } }
-        sortedRow.forEach { (value, rowIndex) ->
-            sortedCol[value]?.let { colIndex ->
-                ret[rowIndex][colIndex] = value
-            }
-        }
+        sortedRow.mapValues { e -> sortedCol[e.key]?.let { Pair(e.value, it) } }
+                .forEach { (value, position) ->
+                    position?.let {
+                        ret[it.first][it.second] = value
+                    }
+                }
         return ret
     }
 
