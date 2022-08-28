@@ -1,5 +1,7 @@
 package tech.igrant.weekly_contest.no308.no3;
 
+import java.util.*;
+
 class Solution {
 
     public int garbageCollection(String[] garbage, int[] travel) {
@@ -10,36 +12,22 @@ class Solution {
         for (int i = 1; i < garbage.length; i++) {
             totalTravel[i] = totalTravel[i - 1] + travel[i - 1];
         }
-        int lastM = 0;
-        int lastG = 0;
-        int lastP = 0;
-        int costOfM = 0;
-        int costOfG = 0;
-        int costOfP = 0;
-        for (int i = 0; i < garbage.length; i++) {
-            String currentHouse = garbage[i];
-            for (int j = 0; j < currentHouse.length(); j++) {
-                char c = currentHouse.charAt(j);
-                switch (c) {
-                    case 'M' -> {
-                        costOfM++;
-                        lastM = i;
-                    }
-                    case 'G' -> {
-                        costOfG++;
-                        lastG = i;
-                    }
-                    case 'P' -> {
-                        costOfP++;
-                        lastP = i;
-                    }
-                    default -> {
+        Map<String, Integer> last = new HashMap<>();
+        int cost = 0;
+        Set<String> types = new HashSet<>(Arrays.asList("M", "P", "G"));
+        for (int j = garbage.length - 1; j >= 0; j--) {
+            String currentHouse = garbage[j];
+            cost += currentHouse.length();
+            if (!types.isEmpty()) {
+                for (String type : types) {
+                    if (currentHouse.contains(type)) {
+                        last.put(type, totalTravel[j]);
                     }
                 }
+                types.removeAll(last.keySet());
             }
         }
-        return costOfM + costOfG + costOfP +
-                totalTravel[lastG] + totalTravel[lastM] + totalTravel[lastP];
+        return cost + last.values().stream().reduce(0, Integer::sum);
     }
 
 }
