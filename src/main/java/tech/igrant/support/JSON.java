@@ -23,4 +23,11 @@ public class JSON {
         }
     }
 
+    public static void printJSONALine(Object object) {
+        try {
+            System.out.println(objectMapper.writeValueAsString(object));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 }
