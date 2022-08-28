@@ -1,32 +1,39 @@
 package tech.igrant.weekly_contest.no308.no4
 
+import java.util.*
+
 class Solution {
 
     private fun sort(conditions: Array<IntArray>, k: Int): Map<Int, Int> {
-        val st = mutableMapOf<Int, MutableSet<Int>>()
-        for (pair in conditions) {
-            val (prev, value) = pair
-            st.computeIfAbsent(value) { mutableSetOf() }.add(prev)
+        // 1 到 k的前置节点
+        val g = Array(k + 1) { mutableListOf<Int>() }
+        // 统计一个元素的依赖数量
+        val inDeg = IntArray(k + 1)
+        for ((x, y) in conditions) {
+            // x 被 y 依赖
+            g[x].add(y)
+            // 统计每一个元素的依赖数量
+            inDeg[y]++
         }
-        var valuesToSort = IntArray(k) { it + 1 }
-        val setSorted = mutableSetOf<Int>()
-        val listSorted = mutableListOf<Int>()
-        while (valuesToSort.isNotEmpty()) {
-            val remain = mutableListOf<Int>()
-            for (value in valuesToSort) {
-                if (st[value]?.all { setSorted.contains(it) } != false) {
-                    listSorted.add(value)
-                    setSorted.add(value)
-                } else {
-                    remain.add(value)
+        val order = mutableListOf<Int>()
+        // 初始化队列
+        val q = ArrayDeque(Array(k) { it + 1 }.filter { inDeg[it] == 0 }.toList())
+        while (q.isNotEmpty()) {
+            q.removeFirst().let { x ->
+                order.add(x)
+                g[x].forEach {
+                    // 当 x 被移除，依赖 x 的元素的依赖数量都应该减去 1
+                    if (--inDeg[it] == 0) {
+                        // 当这个元素没有依赖，则加入队列
+                        q.add(it)
+                    }
                 }
             }
-            if (remain.size == valuesToSort.size) {
-                return emptyMap()
-            }
-            valuesToSort = remain.toIntArray()
         }
-        return listSorted.foldIndexed(mutableMapOf()) { index, acc, value ->
+        if (order.size != k) {
+            return emptyMap()
+        }
+        return order.foldIndexed(mutableMapOf()) { index, acc, value ->
             acc[value] = index
             acc
         }
@@ -40,7 +47,7 @@ class Solution {
         val sortedRow = sort(rowConditions, k)
         val sortedCol = sort(colConditions, k)
         if (sortedRow.isEmpty() || sortedCol.isEmpty()) {
-            return Array(0) {IntArray(0)}
+            return Array(0) { IntArray(0) }
         }
         val ret = Array(k) { IntArray(k) { 0 } }
         sortedRow.forEach { (value, rowIndex) ->

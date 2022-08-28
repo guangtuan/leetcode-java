@@ -36,6 +36,7 @@ public class SolutionTest {
     @Test
     public void buildMatrix() {
         for (TestCase testCase : testCaseList) {
+            System.out.println("input is");
             JSON.printJSON(testCase);
             int[][] actual = solution.buildMatrix(testCase.k, testCase.rowConditions, testCase.colConditions);
             System.out.println("ret is");
@@ -44,6 +45,7 @@ public class SolutionTest {
                     testCase.exp,
                     actual
             );
+            System.out.println("done");
         }
     }
 
