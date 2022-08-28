@@ -6,10 +6,7 @@ import java.util.List;
 
 class Solution {
 
-    private record WithIndex(int index, int val) {
-    }
-
-    private WithIndex last(List<WithIndex> list) {
+    private Integer last(List<Integer> list) {
         return list.get(list.size() - 1);
     }
 
@@ -17,29 +14,28 @@ class Solution {
         // 排序
         // 挨个取
         Arrays.sort(nums);
-        List<WithIndex> prefix = new ArrayList<>();
-        prefix.add(new WithIndex(0, 0));
-        for (int i = 0; i < nums.length; i++) {
-            prefix.add(new WithIndex(i + 1, last(prefix).val + nums[i]));
+        List<Integer> prefix = new ArrayList<>();
+        prefix.add(0);
+        for (int num : nums) {
+            prefix.add(last(prefix) + num);
         }
         int[] ans = new int[queries.length];
         for (int i = 0; i < queries.length; i++) {
-            WithIndex found = find(queries[i], prefix);
-            ans[i] = found.index;
+            ans[i] = find(queries[i], prefix);
         }
         return ans;
     }
 
-    private WithIndex find(int query, List<WithIndex> prefix) {
-        WithIndex pre = null;
-        for (WithIndex withIndex : prefix) {
-            if (query >= withIndex.val) {
-                pre = withIndex;
+    private int find(int query, List<Integer> prefix) {
+        int ans = 0;
+        for (int i = 0; i < prefix.size(); i++) {
+            if (query >= prefix.get(i)) {
+                ans = i;
             } else {
-                return pre;
+                return ans;
             }
         }
-        return pre;
+        return ans;
     }
 
 }
