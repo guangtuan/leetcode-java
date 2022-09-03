@@ -1,4 +1,4 @@
-package tech.igrant.plan.binarySearch.no300
+package tech.igrant.plan.dp.no300
 
 import org.junit.Test
 import tech.igrant.support.JSON
