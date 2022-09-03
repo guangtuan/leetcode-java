@@ -2,10 +2,28 @@ package tech.igrant.support;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JSON {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static <T> List<T> readTo(URL file, Class<T> tClass) {
+        CollectionType type = TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, tClass);
+        try {
+            return objectMapper.readValue(file, type);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 
     public static String toJSON(Object object) {
         try {
