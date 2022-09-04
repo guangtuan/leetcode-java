@@ -2,6 +2,7 @@ package tech.igrant.weekly_contest.no309.no2
 
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 
 class SolutionTest {
@@ -24,11 +25,14 @@ class SolutionTest {
         for (testCase in testCases) {
             println("diff is ${abs(testCase.startPos - testCase.endPos)}")
             println("k is ${testCase.k}")
-            val act = solution.numberOfWays(startPos = testCase.startPos, endPos = testCase.endPos, k = testCase.k)
-            assertEquals(
-                    testCase.exp,
-                    act
-            )
+            val measureTimeMillis = measureTimeMillis {
+                val act = solution.numberOfWays(startPos = testCase.startPos, endPos = testCase.endPos, k = testCase.k)
+                assertEquals(
+                        testCase.exp,
+                        act
+                )
+            }
+            println("cost $measureTimeMillis")
         }
     }
 }
