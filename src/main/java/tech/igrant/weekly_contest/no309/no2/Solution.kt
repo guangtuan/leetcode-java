@@ -13,7 +13,7 @@ class Solution {
     }
 
     private fun comb(small: Int, big: Int): Int {
-        // 阶乘0没有意义，从1算起
+        // 阶乘从 1 算起
         val factorial = LongArray(big + 1) { 1 }
         for (index in 1 until factorial.size) {
             factorial[index] = index.times(factorial[index - 1]) % p
@@ -31,19 +31,20 @@ class Solution {
      */
     private fun reverseForMod(num: Long): Long {
         // num ** (p - 2)
-        return quickPow(num, p - 2, p)
+        return quickPowWithMod(num, p - 2, p)
     }
 
-    private fun quickPow(num: Long, ratio: Long, p: Long): Long {
-        if (ratio == 1L) {
-            return num % p
-        }
-        return if (ratio % 2 == 1L) {
-            val l = quickPow(num, (ratio / 2), p) % p
-            l * l % p * num % p
-        } else {
-            val l = quickPow(num, (ratio / 2), p) % p
-            l * l % p
+    private fun quickPowWithMod(num: Long, ratio: Long, p: Long): Long {
+        return when (ratio) {
+            1L -> num % p
+
+            else -> if (ratio % 2 == 0L) {
+                val l = quickPowWithMod(num, (ratio / 2), p) % p
+                l * l % p
+            } else {
+                val l = quickPowWithMod(num, (ratio / 2), p) % p
+                l * l % p * num % p
+            }
         }
     }
 
