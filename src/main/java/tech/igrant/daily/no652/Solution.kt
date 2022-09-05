@@ -23,11 +23,11 @@ class Solution {
         val v = "#${root.`val`}"
         val l = root.left?.let { bfs(it, c1, c2, found) }?.let { "l$it" } ?: "ln"
         val r = root.right?.let { bfs(it, c1, c2, found) }?.let { "r$it" } ?: "rn"
-        val ret = "$v$l$r"
-        if (!c1.add(ret) && c2.add(ret)) {
-            found.add(root)
+        return "$v$l$r".also {
+            if (!c1.add(it) && c2.add(it)) {
+                found.add(root)
+            }
         }
-        return ret
     }
 
 }
