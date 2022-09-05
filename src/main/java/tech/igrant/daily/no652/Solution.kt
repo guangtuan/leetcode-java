@@ -6,26 +6,27 @@ class Solution {
 
     // 遍历所有的节点，得到值，去重后给出答案
 
-    fun findDuplicateSubtrees(root: TreeNode?): List<TreeNode?> {
-        val st = mutableMapOf<String, Int>()
-        return root?.let {
-            val found = mutableListOf<TreeNode>()
-            bfs(root, st, found)
-            found
-        } ?: emptyList()
-    }
-
-    private fun bfs(root: TreeNode, cache: MutableMap<String, Int>, found: MutableList<TreeNode>): String {
-        val v = "#${root.`val`}"
-        val l = root.left?.let { bfs(it, cache, found) }?.let { "l$it" } ?: "ln"
-        val r = root.right?.let { bfs(it, cache, found) }?.let { "r$it" } ?: "rn"
-        val ret = "$v$l$r"
-        cache[ret]?.let {
-            if (it != 2) {
-                found.add(root)
-                cache[ret] = 2
+    fun findDuplicateSubtrees(root: TreeNode?): List<TreeNode?> = root
+        ?.let {
+            mutableListOf<TreeNode>().apply {
+                bfs(root, mutableSetOf(), mutableSetOf(), this)
             }
-        } ?: run { cache[ret] = 1 }
+        }
+        ?: emptyList()
+
+    private fun bfs(
+        root: TreeNode,
+        c1: MutableSet<String>,
+        c2: MutableSet<String>,
+        found: MutableList<TreeNode>
+    ): String {
+        val v = "#${root.`val`}"
+        val l = root.left?.let { bfs(it, c1, c2, found) }?.let { "l$it" } ?: "ln"
+        val r = root.right?.let { bfs(it, c1, c2, found) }?.let { "r$it" } ?: "rn"
+        val ret = "$v$l$r"
+        if (!c1.add(ret) && c2.add(ret)) {
+            found.add(root)
+        }
         return ret
     }
 
