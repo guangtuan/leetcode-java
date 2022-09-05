@@ -16,22 +16,16 @@ class Solution {
     }
 
     private fun bfs(root: TreeNode, cache: MutableMap<String, Int>, found: MutableList<TreeNode>): String {
-        val v = "${root.`val`}"
-        val l = root.left?.let { bfs(it, cache, found) }
-        val r = root.right?.let { bfs(it, cache, found) }
-        val ret = listOf(
-            v,
-            l?.let { "l$it" } ?: "ln",
-            r?.let { "r$it" } ?: "rn"
-        ).joinToString(":")
+        val v = "#${root.`val`}"
+        val l = root.left?.let { bfs(it, cache, found) }?.let { "l$it" } ?: "ln"
+        val r = root.right?.let { bfs(it, cache, found) }?.let { "r$it" } ?: "rn"
+        val ret = "$v$l$r"
         cache[ret]?.let {
             if (it != 2) {
                 found.add(root)
                 cache[ret] = 2
             }
-        } ?: run {
-            cache[ret] = 1
-        }
+        } ?: run { cache[ret] = 1 }
         return ret
     }
 
