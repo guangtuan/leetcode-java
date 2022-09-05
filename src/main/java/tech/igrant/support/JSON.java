@@ -48,4 +48,13 @@ public class JSON {
             e.printStackTrace();
         }
     }
+
+    public static String toJSONALine(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
