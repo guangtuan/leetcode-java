@@ -62,11 +62,13 @@ class Solution {
             }
         }
         val res = IntArray(max - min + 1) { 0 }.also { it[0] = diff[0] }
+        var result = res[0]
         // 从 diff 还原成数组
         for (i in 1 until diff.size) {
             res[i] = res[i - 1] + diff[i]
+            result = result.coerceAtLeast(res[i])
         }
-        return res.sortedDescending()[0]
+        return result
     }
 
     private fun maxAndMin(intervals: Array<IntArray>): Pair<Int, Int> {

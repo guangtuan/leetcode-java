@@ -11,6 +11,12 @@ class SolutionTest {
     class TestCase(val intervals: Array<IntArray>, val exp: Int)
 
     val testCases = listOfNotNull(
+            TestCase(
+                    arrayOf(
+                            intArrayOf(1, 1)
+                    ),
+                    1
+            ),
             TestCase(arrayOf(
                     intArrayOf(441459, 446342),
                     intArrayOf(801308, 840640),
