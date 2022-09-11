@@ -61,12 +61,12 @@ class Solution {
                 diff[stop] -= 1
             }
         }
-        val res = IntArray(max - min + 1) { 0 }.also { it[0] = diff[0] }
-        var result = res[0]
+        var curr = diff[0]
+        var result = diff[0]
         // 从 diff 还原成数组
         for (i in 1 until diff.size) {
-            res[i] = res[i - 1] + diff[i]
-            result = result.coerceAtLeast(res[i])
+            curr += diff[i]
+            result = result.coerceAtLeast(curr)
         }
         return result
     }
