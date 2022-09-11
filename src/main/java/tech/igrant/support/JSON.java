@@ -25,6 +25,16 @@ public class JSON {
         }
     }
 
+    public static <T> T readToObject(URL file, Class<T> tClass) {
+        try {
+            return objectMapper.readValue(file, tClass);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     public static String toJSON(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
