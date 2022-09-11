@@ -4,6 +4,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import tech.igrant.support.KtJSON
+import kotlin.system.measureTimeMillis
 
 class SolutionTest {
 
@@ -52,11 +53,15 @@ class SolutionTest {
     @Test
     fun minGroups() {
         testCases.forEach {
-            val act = solution.minGroups(it.intervals)
-            assertEquals(
-                    it.exp,
-                    act
-            )
+            val greedy = measureTimeMillis {
+                val act = solution.minGroups(it.intervals)
+                assertEquals(it.exp, act)
+            }
+            val diffArray = measureTimeMillis {
+                val act2 = solution.minGroups2(it.intervals)
+                assertEquals(it.exp, act2)
+            }
+            println("greedy: $greedy, diffArray: $diffArray")
         }
     }
 }

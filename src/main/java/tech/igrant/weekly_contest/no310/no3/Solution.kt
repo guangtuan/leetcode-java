@@ -40,4 +40,43 @@ class Solution {
         return q.size
     }
 
+    fun minGroups2(intervals: Array<IntArray>): Int {
+        // 题目可以转化为
+        // 每个 intervals -> [start, end]
+        // 有一个大区间 [min(start), max(end)]  // 这个区间可以从题目范围 0 到 10**6，也可以从输入计算得来（数组 size 会小一些）
+        // 以这个区间构造数组
+        // 遍历 intervals -> 往 [start, end] 的位置叠加 1
+        // 叠加完的最大元素，就是所求区间的数量
+
+        // 差分数组
+        // 按照数据范围
+        val (max, min) = maxAndMin(intervals)
+        val diff = IntArray(max - min + 1) { 0 }
+        // 要给区间 [start, end] 都 +1，则 diff[start] +=1, diff[end + 1] -= 1
+        // 按照差分数组的定义，diff[start] 的 + delta 会向后传递，所以 diff[end + 1] (不是 diff[-1] 的时候) 要相应的减去 delta
+        for ((start, end) in intervals) {
+            diff[start - min] += 1
+            val stop = end + 1 - min
+            if (stop < diff.size) {
+                diff[stop] -= 1
+            }
+        }
+        val res = IntArray(max - min + 1) { 0 }.also { it[0] = diff[0] }
+        // 从 diff 还原成数组
+        for (i in 1 until diff.size) {
+            res[i] = res[i - 1] + diff[i]
+        }
+        return res.sortedDescending()[0]
+    }
+
+    private fun maxAndMin(intervals: Array<IntArray>): Pair<Int, Int> {
+        var max = intervals[0][0]
+        var min = intervals[0][1]
+        for ((start, end) in intervals) {
+            if (start < min) min = start
+            if (end > max) max = end
+        }
+        return Pair(max, min)
+    }
+
 }
