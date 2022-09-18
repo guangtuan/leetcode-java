@@ -11,6 +11,18 @@ class SolutionTest {
 
     val testCaseList = listOf(
         TestCase(
+            exp = 18,
+            grid = arrayOf(
+                intArrayOf(0, 0, 0, 0, 0, 0, 0),
+                intArrayOf(0, 1, 1, 1, 1, 0, 0),
+                intArrayOf(0, 1, 0, 0, 1, 0, 0),
+                intArrayOf(1, 0, 1, 0, 1, 0, 0),
+                intArrayOf(0, 1, 0, 0, 1, 0, 0),
+                intArrayOf(0, 1, 0, 0, 1, 0, 0),
+                intArrayOf(0, 1, 1, 1, 1, 0, 0)
+            )
+        ),
+        TestCase(
             arrayOf(
                 intArrayOf(1, 1), intArrayOf(1, 0)
             ),
