@@ -2,39 +2,39 @@ package tech.igrant.weekly_contest.no311.no4
 
 class Solution {
 
-    class TireTree() {
-        var count: Int = 0
-        var next: MutableMap<Char, TireTree> = mutableMapOf()
-    }
+    companion object {
+        fun nth(index: Int): (String) -> Char? {
+            return { arr: String ->
+                when {
+                    arr.length > index -> {
+                        arr[index]
+                    }
 
-    private fun buildTree(words: Array<String>): TireTree {
-        val root = TireTree()
-        for (word in words) {
-            var cursor = root
-            for (c in word) {
-                cursor.next.computeIfAbsent(c) { TireTree() }
-                cursor.next[c]?.let {
-                    it.count++
-                    cursor = it
+                    else -> null
                 }
             }
         }
-        return root
     }
 
-    private fun findCount(word: String, tree: TireTree): Int {
-        var ans = 0
-        var cursor = tree
-        for (c in word) {
-            ans += cursor.count
-            cursor.next[c]?.let { cursor = it }
+    class TireTree {
+        var count: Int = 0
+        val next: MutableMap<Char, TireTree> = mutableMapOf()
+
+        fun insert(str: String, fromIndex: Int = 0) {
+            nth(fromIndex)(str)?.let { c ->
+                next.computeIfAbsent(c) { TireTree() }.count++;
+                next[c]?.insert(str, fromIndex + 1)
+            }
         }
-        return ans + cursor.count
     }
 
-    fun sumPrefixScores(words: Array<String>): IntArray {
-        val tree = buildTree(words)
-        return words.map { findCount(it, tree) }.toIntArray()
-    }
+    private fun buildTree(words: Array<String>): TireTree = TireTree().apply { words.forEach { this.insert(it) } }
+
+    private fun getCount(tree: TireTree, word: String, index: Int): Int =
+        tree.count + (tree.next[nth(index)(word)]?.let { getCount(it, word, index + 1) } ?: 0)
+
+
+    fun sumPrefixScores(words: Array<String>): IntArray =
+        with(buildTree(words)) { words.map { getCount(this, it, 0) }.toIntArray() }
 
 }
