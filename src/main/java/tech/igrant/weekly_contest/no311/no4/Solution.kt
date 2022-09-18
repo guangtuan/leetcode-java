@@ -2,29 +2,39 @@ package tech.igrant.weekly_contest.no311.no4
 
 class Solution {
 
-    fun sumPrefixScores(words: Array<String>): IntArray {
-        // map 除了出现的次数，再存储一个出现的位置
-        val prefixToIndex = st(words)
-        val ret = IntArray(words.size) { 0 }
-        for (value in prefixToIndex.values) {
-            for (i in value) {
-                ret[i] += value.size
-            }
-        }
-        return ret
+    class TireTree() {
+        var count: Int = 0
+        var next: MutableMap<Char, TireTree> = mutableMapOf()
     }
 
-    fun st(words: Array<String>): MutableMap<String, MutableList<Int>> {
-        val prefixToIndex = mutableMapOf<String, MutableList<Int>>()
-        for (i in words.indices) {
-            val word = words[i]
-            var tmp = ""
-            for (j in word.indices) {
-                tmp += word[j]
-                prefixToIndex.computeIfAbsent(tmp) {_ -> mutableListOf() }.add(i)
+    private fun buildTree(words: Array<String>): TireTree {
+        val root = TireTree()
+        for (word in words) {
+            var cursor = root
+            for (c in word) {
+                cursor.next.computeIfAbsent(c) { TireTree() }
+                cursor.next[c]?.let {
+                    it.count++
+                    cursor = it
+                }
             }
         }
-        return prefixToIndex
+        return root
+    }
+
+    private fun findCount(word: String, tree: TireTree): Int {
+        var ans = 0
+        var cursor = tree
+        for (c in word) {
+            ans += cursor.count
+            cursor.next[c]?.let { cursor = it }
+        }
+        return ans + cursor.count
+    }
+
+    fun sumPrefixScores(words: Array<String>): IntArray {
+        val tree = buildTree(words)
+        return words.map { findCount(it, tree) }.toIntArray()
     }
 
 }
