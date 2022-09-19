@@ -2,12 +2,39 @@ package tech.igrant.daily.no827
 
 class Solution {
 
-    private val left = Coordinates(0, -1)
-    private val right = Coordinates(0, 1)
-    private val up = Coordinates(-1, 0)
-    private val down = Coordinates(1, 0)
+    private val dirs = listOf(Coordinates(0, -1), Coordinates(0, 1), Coordinates(-1, 0), Coordinates(1, 0))
+
+    class MatrixRange(override val start: Coordinates, override val endInclusive: Coordinates) : ClosedRange<Coordinates>, Iterable<Coordinates> {
+        override fun contains(value: Coordinates): Boolean =
+                value.i in start.i..endInclusive.i && value.j in start.j..endInclusive.j
+
+        override fun iterator(): Iterator<Coordinates> {
+            return It(endInclusive, start)
+        }
+
+        class It(private val endInclusive: Coordinates, start: Coordinates) : Iterator<Coordinates> {
+            var next = start
+
+            override fun hasNext(): Boolean {
+                return next != Coordinates(endInclusive.i.inc(), 0)
+            }
+
+            override fun next(): Coordinates {
+                val ret = Coordinates(next.i, next.j)
+                next = if (ret.j < endInclusive.j) Coordinates(ret.i, ret.j.inc()) else Coordinates(ret.i.inc(), 0)
+                return ret
+            }
+        }
+    }
 
     class Matrix(private val holder: Array<IntArray>) {
+
+        val indices: MatrixRange
+            get() = MatrixRange(
+                    start = Coordinates(i = 0, j = 0),
+                    endInclusive = Coordinates(i = holder.size - 1, j = holder.size - 1)
+            )
+
         operator fun get(coordinates: Coordinates): Int {
             return holder[coordinates.i][coordinates.j]
         }
@@ -17,21 +44,19 @@ class Solution {
         }
 
         fun n(): Int = holder.size
+
     }
 
-    class Range(private val iMin: Int, private val iMax: Int, private val jMin: Int, private val jMax: Int) {
-        operator fun contains(coordinates: Coordinates): Boolean =
-            coordinates.i in iMin..iMax && coordinates.j in jMin..jMax
-
-        override fun toString(): String = "i: [$iMin, $iMax], j: [$jMin, $jMax]"
-    }
-
-    class Coordinates(val i: Int, val j: Int) {
+    class Coordinates(val i: Int, val j: Int) : Comparable<Coordinates> {
         operator fun plus(other: Coordinates): Coordinates {
             return Coordinates(i + other.i, j + other.j)
         }
 
         override fun toString(): String = "i: $i, j: $j"
+        override fun compareTo(other: Coordinates): Int {
+            val iResult = this.i.compareTo(other.i)
+            return if (iResult != 0) iResult else this.j.compareTo(other.j)
+        }
 
         override fun equals(other: Any?): Boolean {
             if (other is Coordinates) {
@@ -45,38 +70,32 @@ class Solution {
         }
     }
 
-    private fun findIsland(grid: Matrix, range: Range): Pair<List<Int>, Matrix> {
+    private fun findIsland(grid: Matrix): Pair<List<Int>, Matrix> {
         val ret = Matrix(Array(grid.n()) { IntArray(grid.n()) { -1 } })
         val island = mutableListOf<Int>()
-        for (i in 0 until grid.n()) {
-            for (j in 0 until grid.n()) {
-                // 这个点已经在岛屿上的，跳过
-                val currCoordinates = Coordinates(i, j)
-                if (ret[currCoordinates] != -1) {
-                    continue
-                }
-                if (grid[currCoordinates] == 1) {
-                    // 新建一个岛屿
-                    island.add(1)
-                    ret[currCoordinates] = island.size - 1
-                    val access = mutableSetOf(currCoordinates)
-                    // 深度搜索四个方向的相邻节点是否为1，如果是1，则加入岛屿，如果不是，停止搜索
-                    search(left, currCoordinates, grid, island, ret, range, access)
-                    search(right, currCoordinates, grid, island, ret, range, access)
-                    search(up, currCoordinates, grid, island, ret, range, access)
-                    search(down, currCoordinates, grid, island, ret, range, access)
-                }
+        for (currCoordinates in grid.indices) {
+            // 这个点已经在岛屿上的，跳过
+            if (ret[currCoordinates] != -1) {
+                continue
+            }
+            if (grid[currCoordinates] == 1) {
+                // 新建一个岛屿
+                island.add(1)
+                ret[currCoordinates] = island.size - 1
+                val access = mutableSetOf(currCoordinates)
+                // 深度搜索四个方向的相邻节点是否为1，如果是1，则加入岛屿，如果不是，停止搜索
+                dirs.forEach { search(it, currCoordinates, grid, island, ret, access) }
             }
         }
         return Pair(island, ret)
     }
 
-    private fun search(dir: Coordinates, curr: Coordinates, grid: Matrix, island: MutableList<Int>, ret: Matrix, range: Range, access: MutableSet<Coordinates>) {
+    private fun search(dir: Coordinates, curr: Coordinates, grid: Matrix, island: MutableList<Int>, ret: Matrix, accessed: MutableSet<Coordinates>) {
         val moved = curr + dir
-        if (!access.add(moved)) {
+        if (!accessed.add(moved)) {
             return
         }
-        if (moved !in range) {
+        if (moved !in grid.indices) {
             return
         }
         if (grid[moved] != 1) {
@@ -84,46 +103,37 @@ class Solution {
         }
         ret[moved] = island.size - 1
         island[island.size - 1]++
-        search(left, moved, grid, island, ret, range, access)
-        search(right, moved, grid, island, ret, range, access)
-        search(up, moved, grid, island, ret, range, access)
-        search(down, moved, grid, island, ret, range, access)
+        dirs.forEach { search(it, moved, grid, island, ret, accessed) }
     }
 
     fun largestIsland(grid: Array<IntArray>): Int {
         // 先找出岛屿
         val matrixOrigin = Matrix(grid)
-        val range = Range(iMin = 0, iMax = matrixOrigin.n() - 1, jMin = 0, jMax = matrixOrigin.n() - 1)
-        val (areaByIslandCode, island) = findIsland(matrixOrigin, range)
+        val (areaByIslandCode, island) = findIsland(matrixOrigin)
         if (areaByIslandCode.isEmpty()) {
             return 1
         }
         var ans = areaByIslandCode[0]
-        for (i in grid.indices) {
-            for (j in grid[i].indices) {
-                val curr = grid[i][j]
-                if (curr == 0) {
-                    val tryToConnected = connect(Coordinates(i, j), island, areaByIslandCode, range)
-                    if (ans < tryToConnected) {
-                        ans = tryToConnected
-                    }
-                }
+        for (coordinates in matrixOrigin.indices) {
+            if (matrixOrigin[coordinates] == 0) {
+                val tryToConnected = connect(coordinates, island, areaByIslandCode)
+                ans = ans.coerceAtLeast(tryToConnected)
             }
         }
         return ans
     }
 
-    private fun connect(curr: Coordinates, island: Matrix, areaByIslandCode: List<Int>, range: Range): Int {
+    private fun connect(curr: Coordinates, island: Matrix, areaByIslandCode: List<Int>): Int {
         var ans = 1
         // 添加过的岛屿编号
         val added = mutableSetOf<Int>()
-        for (nextDir in listOf(left, right, up, down)) {
+        for (nextDir in dirs) {
             val nextCoordinates = curr + nextDir
-            if (nextCoordinates !in range) continue
-            if (island[nextCoordinates] == -1) continue
-            val code = island[nextCoordinates]
-            if (added.add(code)) {
-                ans += areaByIslandCode[code]
+            if ((nextCoordinates !in island.indices) || (island[nextCoordinates] == -1)) continue
+            with(island[nextCoordinates]) {
+                if (added.add(this)) {
+                    ans += areaByIslandCode[this]
+                }
             }
         }
         return ans
