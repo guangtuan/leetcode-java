@@ -4,13 +4,18 @@ class Solution {
 
     fun rotate(nums: IntArray, k: Int): Unit {
         val kMod = k % nums.size
-        val mid = nums.size - kMod
-        val p1 = nums.slice(IntRange(start = 0, endInclusive = mid - 1))
-        val p2 = nums.slice(IntRange(start = mid, endInclusive = nums.size - 1))
-        val merge = p2.toMutableList().apply {
-            this.addAll(p1)
+        if (kMod == 0 || nums.size == 1) {
+            return
         }
-        merge.forEachIndexed { index, i -> nums[index] = i }
+        val holder = nums.toList()
+        var startIndex = nums.size - kMod
+        for (i in nums.indices) {
+            if (startIndex > nums.size - 1) {
+                startIndex = 0
+            }
+            nums[i] = holder[startIndex]
+            startIndex++
+        }
     }
 
 }

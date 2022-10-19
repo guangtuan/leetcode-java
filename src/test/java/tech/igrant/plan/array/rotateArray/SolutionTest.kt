@@ -10,6 +10,16 @@ class SolutionTest {
 
     val testCaseList = listOf(
         TestCase(
+            nums = intArrayOf(1, 2),
+            k = 0,
+            exp = intArrayOf(1, 2)
+        ),
+        TestCase(
+            nums = intArrayOf(1, 2),
+            k = 2,
+            exp = intArrayOf(1, 2)
+        ),
+        TestCase(
             nums = intArrayOf(1, 2, 3, 4, 5, 6, 7),
             k = 3,
             exp = intArrayOf(5, 6, 7, 1, 2, 3, 4)
@@ -28,8 +38,8 @@ class SolutionTest {
         testCaseList.forEach {
             solution.rotate(it.nums, it.k)
             assertEquals(
-                it.nums.contentToString(),
-                it.exp.contentToString()
+                it.exp.contentToString(),
+                it.nums.contentToString()
             )
         }
     }
