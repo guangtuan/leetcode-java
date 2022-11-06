@@ -4,64 +4,41 @@ import java.util.PriorityQueue
 
 class Solution {
 
-    data class Member(
-            val cost: Int,
-            val idx: Int,
-    )
-
-    fun add(pq: PriorityQueue<Member>, idx: Int, costs: IntArray, added: MutableSet<Int>) {
-        if (added.add(idx)) {
-            pq.add(Member(cost = costs[idx], idx = idx))
-        }
-    }
-
     fun totalCost(costs: IntArray, k: Int, candidates: Int): Long {
-        val added = mutableSetOf<Int>()
-        val pq = PriorityQueue(
-                object : Comparator<Member> {
-                    override fun compare(o1: Member, o2: Member): Int {
-                        if (o1.cost == o2.cost) {
-                            return o1.idx.compareTo(o2.idx)
-                        }
-                        return o1.cost.compareTo(o2.cost)
-                    }
-                }
-        )
-        var left = candidates - 1
-        var right = costs.size - left - 1
-        if (right >= left) {
-            for (i in 0..left) {
-                add(pq, i, costs, added)
+        var copyOfK = k
+        // 两个堆
+        if (costs.size >= candidates * 2) {
+            var left = candidates
+            var right = costs.size - candidates - 1
+            val pq1 = PriorityQueue<Int>().apply {
+                this.addAll(costs.slice(IntRange(start = 0, endInclusive = left - 1)))
             }
-            for (i in (costs.size - 1) downTo right) {
-                add(pq, i, costs, added)
+            val pq2 = PriorityQueue<Int>().apply {
+                this.addAll(costs.slice(IntRange(right + 1, costs.size - 1)))
             }
-        } else {
-            for (i in costs.indices) {
-                add(pq, i, costs, added)
-            }
-        }
-        var vk = k
-        var res = 0L
-        while (vk > 0) {
-            val pop = pq.poll()
-            res += pop.cost
-            vk--
-            if (pop.idx <= left) {
-                if (right > left) {
+            var res = 0L
+            while (left <= right) {
+                if (pq1.peek() <= pq2.peek()) {
+                    res += pq1.poll()
+                    pq1.add(costs[left])
                     left++
-                    add(pq, left, costs, added)
+                } else {
+                    res += pq2.poll()
+                    pq2.add(costs[right])
+                    right--
                 }
-            } else {
-                if (pop.idx >= right) {
-                    if (right > left) {
-                        right--
-                        add(pq, right, costs, added)
-                    }
+                if (--copyOfK == 0) {
+                    return res
                 }
             }
+            pq1.addAll(pq2)
+            while (copyOfK -- != 0) {
+                res += pq1.poll()
+            }
+            return res
+        } else {
+            return costs.sorted().subList(0, k).sum().toLong()
         }
-        return res
     }
 
 }
