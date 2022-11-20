@@ -9,44 +9,35 @@ class Solution {
 
     fun closestNodes(root: TreeNode?, queries: List<Int>): List<List<Int>> {
         // 寻找二叉搜索树里，最接近 query 的两个值
-        return root
-                ?.let { it ->
-                    queries.map { q ->
-                        listOf(
-                                minCloset(it, q, -1),
-                                maxCloset(it, q, -1),
-                        )
-                    }
-                }
-                ?: emptyList()
-    }
-
-    private fun minCloset(root: TreeNode, query: Int, pre: Int): Int {
-        return when {
-            query > root.`val` -> {
-                root.right?.let { r -> minCloset(r, query, root.`val`) } ?: root.`val`
-            }
-
-            query < root.`val` -> {
-                root.left?.let { l -> minCloset(l, query, pre) } ?: pre
-            }
-
-            else -> root.`val`
+        val asList = root?.let { toList(it) } ?: emptyList()
+        println(asList)
+        return queries.map {
+            listOf(
+                    closetMin(asList, it),
+                    closetMax(asList, it),
+            )
         }
     }
 
-    private fun maxCloset(root: TreeNode, query: Int, pre: Int): Int {
-        return when {
-            query < root.`val` -> {
-                root.left?.let { l -> maxCloset(l, query, root.`val`) } ?: root.`val`
+    private fun toList(root: TreeNode): MutableList<Int> {
+        // 中序遍历，放到数组里
+        return mutableListOf<Int>().apply {
+            root.left?.let { l ->
+                this.addAll(toList(l))
             }
-
-            query > root.`val` -> {
-                root.right?.let { r -> maxCloset(r, query, pre) } ?: pre
+            this.add(root.`val`)
+            root.right?.let { r ->
+                this.addAll(toList(r))
             }
-
-            else -> root.`val`
         }
+    }
+
+    private fun closetMin(asList: List<Int>, q: Int): Int {
+        return -1
+    }
+
+    private fun closetMax(asList: List<Int>, q: Int): Int {
+        return -1
     }
 
 }
