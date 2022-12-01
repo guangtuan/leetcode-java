@@ -51,12 +51,12 @@ class SolutionTest {
     fun closestNodes() {
         for (testCase in testCases) {
             val act = solution.closestNodes(testCase.root, testCase.queries)
-//            for ((a, e) in act.zip(testCase.exp)) {
-//                assertEquals(
-//                        e.joinToString(","),
-//                        a.joinToString(",")
-//                )
-//            }
+            for ((a, e) in act.zip(testCase.exp)) {
+                assertEquals(
+                        e.joinToString(","),
+                        a.joinToString(",")
+                )
+            }
         }
     }
 
