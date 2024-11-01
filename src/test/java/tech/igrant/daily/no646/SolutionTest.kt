@@ -3,7 +3,6 @@ package tech.igrant.daily.no646
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import tech.igrant.support.JSON
-import kotlin.streams.toList
 
 class SolutionTest {
 

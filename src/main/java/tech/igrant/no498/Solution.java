@@ -48,7 +48,7 @@ class Solution {
                 case right -> {
                     this.x = this.x + 1;
                 }
-                case upLeft, downRight, up, default -> {
+                case upLeft, downRight, up -> {
 
                 }
             };
